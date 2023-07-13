@@ -1,5 +1,6 @@
 package testing.apilogdata.Service;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import testing.apilogdata.Dto.LogDTO;
 import testing.apilogdata.Entity.Logs;
@@ -10,11 +11,9 @@ import java.util.List;
 
 @Service
 public class LogService {
-    private final LogRepository logRepository;
+    @Autowired
+     LogRepository logRepository;
 
-    public LogService(LogRepository logRepository) {
-        this.logRepository = logRepository;
-    }
 
 
     public List<LogDTO> getAllLogs() {
@@ -35,20 +34,5 @@ public class LogService {
 
         return logEntryDTOs;
     }
-//@Service
-//public class LogService {
-//    private final LogRepository  logRepository;
-//
-//    public LogService(LogRepository logEntryRepository) {
-//        this.logRepository = logEntryRepository;
-//    }
-//
-//    public List<Logs> getLogsByUser(String user) {
-//        return logRepository.findByUser(user);
-//    }
-//
-//    public List<Logs> getAllLogs() {
-//        return logRepository.findAll();
-//    }
 
 }

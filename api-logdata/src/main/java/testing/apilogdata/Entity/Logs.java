@@ -11,8 +11,8 @@ public class Logs {
 
 
 
-//    @Column(name = "user_agent")
-//    private String userAgent;
+    @Column(name = "user_agent")
+    private String userAgent;
 
     @Column(name = "user")
     private String user;
@@ -32,6 +32,14 @@ public class Logs {
 
     public Long getId() {
         return id;
+    }
+
+    public String getUserAgent() {
+        return userAgent;
+    }
+
+    public void setUserAgent(String userAgent) {
+        this.userAgent = userAgent;
     }
 
     public void setId(Long id) {
