@@ -6,7 +6,6 @@ import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,33 +21,27 @@ public class LogController {
     @Autowired
     LogService logService;
 
-    private static final int ACCESS_LIMIT = 5;
-    private static final long TWO_MINUTES_IN_MILLISECONDS = 2* 60 * 1000;
-    private Bucket requestBucket;
+
+    private final Bucket bucket;
 
     public LogController() {
-        Bandwidth limit = Bandwidth.classic(ACCESS_LIMIT, Refill.intervally(ACCESS_LIMIT, Duration.ofMinutes(5)));
-        this.requestBucket = Bucket4j.builder().addLimit(limit).build();
+        Bandwidth limit = Bandwidth.classic(5, Refill.greedy(5, Duration.ofMinutes(2)));
+        this.bucket = Bucket4j.builder()
+                .addLimit(limit)
+                .build();
     }
+
 
     @GetMapping("/log")
-    public ResponseEntity<Object> getAllLogs() {
-        if (exceededAccessLimit()) {
-            String message = "Access limit exceeded. Please try again later.";
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS)
-                    .contentType(MediaType.TEXT_PLAIN)
-                    .body(message);
-        } else {
+    public ResponseEntity<List<LogDTO>> getAllLogs() {
+        if (bucket.tryConsume(1)) {
             List<LogDTO> logs = logService.getAllLogs();
             return ResponseEntity.ok(logs);
+        } else {
+            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).build();
         }
     }
-
-    private boolean exceededAccessLimit() {
-        return !requestBucket.tryConsume(1);
-    }
 }
-
 //@RestController
 //
 //public class LogController {
