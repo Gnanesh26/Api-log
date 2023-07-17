@@ -4,13 +4,17 @@ import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.Bucket4j;
 import io.github.bucket4j.Refill;
+import org.apache.catalina.filters.RateLimitFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import testing.apilogdata.Dto.LogDTO;
 import testing.apilogdata.Service.LogService;
+import testing.apilogdata.Service.PricingPlan;
 
 import java.time.Duration;
 import java.util.List;
@@ -18,15 +22,22 @@ import java.util.List;
 
 @RestController
 public class LogController {
+
+
+
+    @Autowired
+    private
+    PricingPlan pricingPlan;
     @Autowired
     LogService logService;
     private Bucket bucket;
 
 
-    @GetMapping("/token-generate")
-    public ResponseEntity<String> generateToken(){
+    @GetMapping("/token-generate/{clientToken}")
+    public ResponseEntity<String> generateToken(@PathVariable("clientToken")String clientToken){
         Refill refill = Refill.of(5,Duration.ofMinutes(1));
-      bucket=Bucket4j.builder().addLimit(Bandwidth.classic(5,refill)).build();
+//      bucket=Bucket4j.builder().addLimit(Bandwidth.classic(5,refill)).build();
+        bucket= pricingPlan.getPlanServiceBucket(clientToken);
         return new ResponseEntity<String>("Generated Successfully |||"+bucket.toString(),HttpStatus.OK);
     }
 
