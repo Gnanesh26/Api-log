@@ -42,26 +42,7 @@ public class LogController {
         }
     }
 }
-//@RestController
-//
-//public class LogController {
-//    @Autowired
-//    LogService logService;
-//    private static final int ACCESS_LIMIT = 2;
-//    private int accessCount = 0;
-//
-//    @GetMapping("/log")
-//    public ResponseEntity<Object> getAllLogs() {
-//        if (accessCount < ACCESS_LIMIT) {
-//            accessCount++;
-//            List<LogDTO> logs = logService.getAllLogs();
-//            return ResponseEntity.ok(logs);
-//        } else {
-//            String message = "Access limit exceeded";
-//            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(message);
-//        }
-//    }
-//}
+
 //@RestController
 //
 //public class LogController {
